@@ -32,7 +32,7 @@ public class Network {
         }
       
         for(int i = 0; i < neurons.length - 1; i++){
-            DoubleMatrix2D w = new DenseDoubleMatrix2D(neurons[i], neurons[i + 1]);
+            DoubleMatrix2D w = new DenseDoubleMatrix2D(neurons[i + 1], neurons[i]);
             w.assign(randomGausian);
             weights.add(w);
         }
@@ -153,9 +153,7 @@ public class Network {
         activations.add(activation.copy());
         
         for(int i = 0; i < biases.size(); i++){
-            System.out.println("size of biases: " + biases.size());
-            System.out.println("bias size: " + biases.get(i).size() + ", weights size: " + weights.get(i).size());
-            DoubleMatrix2D z = alg.mult(biases.get(i), activation).assign(weights.get(i), add);
+            DoubleMatrix2D z = alg.mult(weights.get(i), activation).assign(biases.get(i), add);
             zs.add(z.copy());
             z.assign(sigmoid);
             activation = z.copy();
@@ -172,7 +170,7 @@ public class Network {
         nabla_w.set(nabla_w.size() - 1, alg.mult(delta, alg.transpose(activations.get(activations.size() - 2))));
         
         for(int i = 2; i < layers; i++){
-            DoubleMatrix2D sp = zs.get(zs.size() - 1).copy();
+            DoubleMatrix2D sp = zs.get(zs.size() - i).copy();
             sp.assign(sigmoidPrime);
             delta = alg.mult(alg.transpose(weights.get(weights.size() - i + 1)), delta).assign(sp, mult);
             nabla_b.set(nabla_b.size() - i, delta.copy());
